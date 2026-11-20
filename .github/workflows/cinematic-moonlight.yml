@@ -1,0 +1,36 @@
+name: Cinematic Moonlight Film
+on:
+  push:
+    branches: [feat/cinema-moonlight-20261121]
+    paths:
+      - 'films/moonlight/**'
+      - '.github/workflows/cinematic-moonlight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: moonlight-film
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      MOTION_JOB_ENCODER: cpu
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Render through Shin-MotionMaker CLI and Remotion
+        run: node films/moonlight/render.mjs
+      - name: Upload playable MP4, preview and original score
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: moonlight-cinematic-${{ github.run_id }}
+          path: .agent-work/film-delivery/
+          retention-days: 14
