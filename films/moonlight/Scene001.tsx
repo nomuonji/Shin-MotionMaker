@@ -1,4 +1,5 @@
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from "remotion";
+import type {ReactNode} from "react";
 
 const W=1920, H=1080;
 const C={night:"#050A16",paper:"#F8F5EC",muted:"#A3ADC3",cyan:"#79E4F4",blue:"#2876C8",gold:"#FFBE77",rose:"#FF9CA8"};
@@ -20,7 +21,7 @@ const txt=(text:string,x:number,y:number,size:number,fill:string=C.paper,weight:
 const line=(x1:number,y1:number,x2:number,y2:number,color:string=C.muted,width:number=1,opacity:number=1)=>(
   <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={width} opacity={opacity}/>
 );
-function Scene({t,start,end,children}:{t:number,start:number,end:number,children:React.ReactNode}){
+function Scene({t,start,end,children}:{t:number,start:number,end:number,children:ReactNode}){
   const opacity=a(t,start,end);
   if(opacity<=0.0001)return null;
   return <g opacity={opacity}>{children}</g>;
@@ -30,9 +31,10 @@ function Moon({x,y,r,t,opacity=1}:{x:number,y:number,r:number,t:number,opacity?:
    [-.42,-.26,.14],[-.14,-.5,.105],[.28,-.34,.17],[.33,.23,.13],[-.38,.34,.21],[.02,.13,.12],[.48,-.08,.095],[-.08,.52,.16]
  ];
  return <g opacity={opacity}>
+  <defs><clipPath id={`clipMoon-${x}`}><circle cx="0" cy="0" r={r}/></clipPath></defs>
   <circle cx={x} cy={y} r={r*1.2} fill="#B2CDDE" opacity={.11} filter="url(#blur)"/>
   <circle cx={x} cy={y} r={r} fill="url(#moon)"/>
-  <g clipPath="url(#clipMoon)" transform={`translate(${x} ${y}) rotate(${Math.sin(t*.04)*3})`}>
+  <g clipPath={`url(#clipMoon-${x})`} transform={`translate(${x} ${y}) rotate(${Math.sin(t*.04)*3})`}>
    {craters.map(([cx,cy,size],i)=><g key={i}>
     <circle cx={cx*r} cy={cy*r} r={size*r} fill="#344A5D" opacity={.43}/>
     <circle cx={(cx-.017)*r} cy={(cy-.02)*r} r={size*r*.83} fill="#8294A0" opacity={.22}/>
@@ -45,9 +47,10 @@ function Moon({x,y,r,t,opacity=1}:{x:number,y:number,r:number,t:number,opacity?:
 }
 function Earth({x,y,r,t}:{x:number,y:number,r:number,t:number}){
  return <g>
+  <defs><clipPath id={`clipEarth-${x}`}><circle cx="0" cy="0" r={r}/></clipPath></defs>
   <circle cx={x} cy={y} r={r*1.35} fill="#2D88FF" opacity={.12} filter="url(#blur)"/>
   <circle cx={x} cy={y} r={r} fill="url(#earth)"/>
-  <g clipPath="url(#clipEarth)" transform={`translate(${x} ${y}) rotate(${Math.sin(t*.08)*5})`}>
+  <g clipPath={`url(#clipEarth-${x})`} transform={`translate(${x} ${y}) rotate(${Math.sin(t*.08)*5})`}>
    <path d={`M ${-r*.8} ${-r*.48} Q ${-r*.2} ${-r*.9} ${r*.14} ${-r*.5} L ${r*.37} ${-r*.12} L ${r*.12} ${r*.1} L ${-r*.08} ${r*.5} L ${-r*.55} ${r*.18} Z`} fill="#5CB7AC" opacity={.8}/>
    <path d={`M ${r*.52} ${r*.16} Q ${r*.84} ${r*.3} ${r*.78} ${r*.7} L ${r*.33} ${r*.88} L ${r*.12} ${r*.46} Z`} fill="#8AC2A1" opacity={.75}/>
    <path d={`M ${-r} ${-r*.22} Q ${-r*.33} ${-r*.53} ${r*.18} ${-r*.22} T ${r} ${-r*.37}`} stroke="#E1FBFF" strokeWidth={r*.07} opacity={.43} fill="none"/>
