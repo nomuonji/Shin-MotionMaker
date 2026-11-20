@@ -42,7 +42,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Checkout Animation Factory (public source)
-        if: ${{ inputs.mode == "generate-longform" }}
+        if: ${{ inputs.mode == 'generate-longform' }}
         uses: actions/checkout@v4
         with:
           repository: nomuonji/animation-factory
@@ -50,7 +50,7 @@ jobs:
           path: .agent-work/animation-factory
           persist-credentials: false
       - name: Export longform as MotionMaker request
-        if: ${{ inputs.mode == "generate-longform" }}
+        if: ${{ inputs.mode == 'generate-longform' }}
         shell: pwsh
         run: |
           $id = $env:SMM_FACTORY_SOURCE
