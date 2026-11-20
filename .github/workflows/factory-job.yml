@@ -41,7 +41,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Checkout Animation Factory (public source)
+      - name: Checkout Animation Factory source
         if: ${{ inputs.mode == 'generate-longform' }}
         uses: actions/checkout@v4
         with:
@@ -49,35 +49,12 @@ jobs:
           ref: main
           path: .agent-work/animation-factory
           persist-credentials: false
-      - name: Export longform as MotionMaker request
+      - name: Export longform request
         if: ${{ inputs.mode == 'generate-longform' }}
         shell: pwsh
         run: |
           $id = $env:SMM_FACTORY_SOURCE
-          if ($id -cnotmatch '^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}        if: ${{ inputs.mode == 'render' }}
-        shell: pwsh
-        env:
-          FFMPEG_URL: https://github.com/GyanD/codexffmpeg/releases/download/8.1/ffmpeg-8.1-essentials_build.zip
-          FFMPEG_SHA256: 8748283d821613d930b0e7be685aaa9df4ca6f0ad4d0c42fd02622b3623463c6
-        run: |
-          $zip = Join-Path $env:RUNNER_TEMP 'ffmpeg.zip'
-          $dir = Join-Path $env:RUNNER_TEMP 'ffmpeg'
-          $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri $env:FFMPEG_URL -OutFile $zip -MaximumRetryCount 3 -RetryIntervalSec 5
-          if ((Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant() -ne $env:FFMPEG_SHA256) { throw 'ffmpeg checksum mismatch' }
-          Expand-Archive -LiteralPath $zip -DestinationPath $dir
-          $bin = Join-Path $dir 'ffmpeg-8.1-essentials_build\bin'
-          "FFMPEG_PATH=$(Join-Path $bin 'ffmpeg.exe')" >> $env:GITHUB_ENV
-          $bin >> $env:GITHUB_PATH
-      - run: node tools/factory/job-action.mjs
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: motionmaker-handoff-${{ github.run_id }}-${{ github.run_attempt }}
-          path: .agent-work/factory-delivery/
-          if-no-files-found: warn
-          retention-days: 7
-) { throw 'Source must be a production ID for generate-longform' }
+          if ($id -cnotmatch '^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$') { throw 'Source must be a production ID for generate-longform' }
           $inputFile = Join-Path $env:GITHUB_WORKSPACE ".agent-work/animation-factory/productions/$id/longform.json"
           $outputFile = Join-Path $env:GITHUB_WORKSPACE "factory-requests/$id.json"
           node .agent-work/animation-factory/tools/motionmaker/export-longform.mjs $inputFile $outputFile
