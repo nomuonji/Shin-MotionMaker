@@ -1,21 +1,22 @@
-# Video Factory bridge
+# Video Factory連携（自由制作エンジン）
 
-This private copy adds a freeform Remotion production backend without replacing Animation Factory's Phaser/JSON backend.
+このリポジトリはAnimation FactoryのJSON/Phaser動画工場を置換しない。追加のReact/Remotion制作方式として使う。元のコピーはプライベートで、外部公開や自動投稿を有効化しない。
 
-## Handoff
+## 使い方
 
-1. In nomuonji/animation-factory, run the export-longform tool to convert a longform concept to Shin-MotionMaker's official request JSON.
-2. Submit that JSON as factory-requests/<id>.json to this repository on a PR. References to external media remain references; no assets are secretly copied.
-3. Use Actions > Video Factory (manual), mode=generate, source=factory-requests/<id>.json. The artifact includes motion-job.zip and handoff.json. It is an editable **starter**, not a completed video.
-4. Unzip and have the production agent read AGENTS.md / brief.md / project.json, implement the scenes and run local QA. Commit the authored job under factory-jobs/<id>/ on a PR.
-5. Use the same manual action, mode=render, source=factory-jobs/<id>, target=preview or final. Download video.mp4, reports/ and handoff.json.
-6. Review content, audio, source rights and intended destination separately. No workflow here pushes to video-publisher or publishes to YouTube.
+1. Animation Factoryの長尺企画から、tools/motionmaker/export-longform.mjs でShin-MotionMaker公式の request.json を出力する。
+2. このリポジトリの factory-requests/<id>.json としてPRに入れる。外部メディアファイルは自動複製されない。使用する素材は別途権利・出典を確認する。
+3. Actionsの「Video Factory (manual)」で mode=generate, source=factory-requests/<id>.json を実行する。artifactの motion-job.zip は編集可能な制作の足場であり、完成動画ではない。
+4. 制作エージェントがZIP内のAGENTS.md、brief.md、project.jsonを読んで、plan/、scenes/、音声などを実装する。完成した制作ジョブを factory-jobs/<id>/ にPRで反映する。
+5. 同じActionsで mode=render, source=factory-jobs/<id>, target=preview|final を指定して実行する。生成物は video.mp4、reports/、handoff.json のartifact。元の制作ジョブはコミットで追跡できる。
+6. 映像・音声・出典・権利・投稿先を別に確認し、必要なら既存のvideo-publisher等の公開手順で扱う。ここから自動公開はしない。
 
-## Guarantees / constraints
+## 品質と安全
 
-- Production source is tracked at a Git commit; rendered MP4 receives a SHA-256 receipt.
-- The render workflow uses the existing CLI, pre/post QC for final explanation videos, structural validation and ghost-frame scanning. Failed checks stop delivery.
-- handoff.json deliberately records editorial_review=unreviewed and publishing_authorized=false, even when rendering succeeds.
-- No automatic paid image/video generation. The workflow is manual-only, and the Windows runner consumes Actions time.
-- SMM job scripts are not sandboxed: only review trusted authored jobs. Symlinks in job source are rejected; rendering uses a temporary copy.
-- The original repository is public, but this private copy's Pages workflow must not deploy or verify the upstream public GUI.
+- 解説動画のfinalでは事前/事後QCと構造検査、ゴースト走査を実行する。previewは制作途中を確認するための出力として使える。
+- handoff.jsonの editorial_review=unreviewed と publishing_authorized=false はレンダー成功後も維持する。技術成功を作品の合格や公開許可と混同しない。
+- Seedanceなど課金を伴う生成APIはこのActionsから呼ばない。Windows runnerでCPUレンダーするためActionsの実行枠・時間を消費する。
+- ジョブ内のスクリプトはサンドボックスではない。ソースを確認した信頼できるジョブだけを実行する。シンボリックリンクを拒否し、レンダーは一時コピーで行う。
+- 本コピーのGitHub Pagesは元の公開GUIとは独立しているため、元の公開Pagesを更新するワークフローは実行しない。
+
+実装経路は生成・レンダーの入口を追加したものであり、AIエージェント自体の自律起動やYouTube分析・公開までの完全自動化を意味しない。
