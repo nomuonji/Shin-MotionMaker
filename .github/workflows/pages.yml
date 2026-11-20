@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
+    if: github.repository == 'kokuren333/Shin-MotionMaker'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

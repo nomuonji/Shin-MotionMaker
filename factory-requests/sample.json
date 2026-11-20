@@ -1,0 +1,17 @@
+{
+  "form": {
+    "videoMode": "explanation",
+    "styleMode": "motion",
+    "title": "Sample freeform starter",
+    "description": "Render-independent starter for factory handoff validation.",
+    "audience": "制作エージェント",
+    "voiceEngine": "none",
+    "generateAudio": false,
+    "characterUsage": "none",
+    "allowWebResearch": false,
+    "fullScreen": true,
+    "width": 640,
+    "height": 360,
+    "fps": 30
+  }
+}

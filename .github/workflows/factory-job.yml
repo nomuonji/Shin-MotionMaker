@@ -1,0 +1,67 @@
+name: Video Factory (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Generate editable starter or render authored job
+        required: true
+        type: choice
+        options: [generate, render]
+        default: generate
+      source:
+        description: factory-requests/file.json or factory-jobs/directory
+        required: true
+        type: string
+        default: factory-requests/sample.json
+      target:
+        description: Output type for render
+        required: true
+        type: choice
+        options: [preview, final]
+        default: preview
+permissions:
+  contents: read
+concurrency:
+  group: video-factory-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  factory:
+    runs-on: windows-latest
+    timeout-minutes: 65
+    env:
+      SMM_FACTORY_MODE: ${{ inputs.mode }}
+      SMM_FACTORY_SOURCE: ${{ inputs.source }}
+      SMM_FACTORY_TARGET: ${{ inputs.target }}
+      MOTION_JOB_ENCODER: cpu
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Fetch pinned ffmpeg
+        if: ${{ inputs.mode == 'render' }}
+        shell: pwsh
+        env:
+          FFMPEG_URL: https://github.com/GyanD/codexffmpeg/releases/download/8.1/ffmpeg-8.1-essentials_build.zip
+          FFMPEG_SHA256: 8748283d821613d930b0e7be685aaa9df4ca6f0ad4d0c42fd02622b3623463c6
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'ffmpeg.zip'
+          $dir = Join-Path $env:RUNNER_TEMP 'ffmpeg'
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri $env:FFMPEG_URL -OutFile $zip -MaximumRetryCount 3 -RetryIntervalSec 5
+          if ((Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant() -ne $env:FFMPEG_SHA256) { throw 'ffmpeg checksum mismatch' }
+          Expand-Archive -LiteralPath $zip -DestinationPath $dir
+          $bin = Join-Path $dir 'ffmpeg-8.1-essentials_build\bin'
+          "FFMPEG_PATH=$(Join-Path $bin 'ffmpeg.exe')" >> $env:GITHUB_ENV
+          $bin >> $env:GITHUB_PATH
+      - run: node tools/factory/job-action.mjs
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: motionmaker-handoff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .agent-work/factory-delivery/
+          if-no-files-found: warn
+          retention-days: 7
