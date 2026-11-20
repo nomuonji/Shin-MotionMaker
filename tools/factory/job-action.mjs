@@ -17,6 +17,7 @@ const receipt = {
   repository: process.env.GITHUB_REPOSITORY || "nomuonji/Shin-MotionMaker",
   commit: process.env.GITHUB_SHA || null, mode, source,
   target: mode === "render" ? target : null,
+  upstream: process.env.SMM_FACTORY_UPSTREAM_SHA ? {repository:"nomuonji/animation-factory",commit:process.env.SMM_FACTORY_UPSTREAM_SHA,production_id:process.env.SMM_FACTORY_PRODUCTION_ID} : null,
   status: "failed", editorial_review: "unreviewed",
   publishing_authorized: false, published: false, checks: [],
 };
