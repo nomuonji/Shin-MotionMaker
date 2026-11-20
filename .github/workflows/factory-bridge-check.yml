@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - tools/factory/**
+      - .github/workflows/factory-job.yml
       - factory-requests/**
       - .github/workflows/factory-bridge-check.yml
 permissions:
@@ -19,7 +20,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: node tools/factory/job-action.mjs
+      - uses: actions/checkout@v4
+        with:
+          repository: nomuonji/animation-factory
+          ref: main
+          path: .agent-work/animation-factory
+          persist-credentials: false
+      - name: Export real longform request
+        run: node .agent-work/animation-factory/tools/motionmaker/export-longform.mjs .agent-work/animation-factory/productions/lunar-camera/longform.json factory-requests/lunar-camera.json
+      - name: Generate external production starter
+        env:
+          SMM_FACTORY_SOURCE: factory-requests/lunar-camera.json
+        run: node tools/factory/job-action.mjs
       - name: Verify real generated ZIP and receipt
         run: |
           node --input-type=module -e '
@@ -28,6 +40,7 @@ jobs:
             const d = ".agent-work/factory-delivery/";
             const h = JSON.parse(fs.readFileSync(d+"handoff.json","utf8"));
             assert.equal(h.status,"starter_generated");
+            assert.equal(h.source,"factory-requests/lunar-camera.json");
             assert.equal(h.publishing_authorized,false);
             assert.equal(h.editorial_review,"unreviewed");
             assert.ok(fs.statSync(d+"motion-job.zip").size>1000);
