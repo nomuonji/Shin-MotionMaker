@@ -1,0 +1,25 @@
+{
+  "form": {
+    "videoMode": "explanation",
+    "styleMode": "motion",
+    "fullScreen": true,
+    "biimUsage": "never",
+    "characterUsage": "none",
+    "voiceEngine": "none",
+    "generateAudio": false,
+    "imageGeneration": false,
+    "videoGeneration": false,
+    "allowWebResearch": false,
+    "evidencePolicy": "supplied-only",
+    "title": "今見ている月は、1.3秒前の月だ",
+    "description": "光の伝播速度を直感的に体験する、ミニマルなサイエンス映像エッセイ。非言語のモーション・タイポグラフィ作品。",
+    "audience": "科学と映像デザインが好きな一般視聴者",
+    "takeaway": "宇宙を見ることは過去を見ること",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "durationSec": 62,
+    "urls": "https://science.nasa.gov/mission/webb/science-overview/science-explainers/how-does-webb-see-back-in-time/\nhttps://science.nasa.gov/moon/by-the-numbers/\nhttps://www.amnh.org/explore/videos/space/light-travel-time-from-distant-stars",
+    "instructions": "ナレーションなしの映像エッセイ。日本語キネティックタイポグラフィ、地球・月・太陽の自作グラフィックス、正確な1.28秒の実時間演出、独自の音響。自動投稿は禁止。"
+  }
+}
