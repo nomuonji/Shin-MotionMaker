@@ -4,6 +4,10 @@
 
 ## 使い方
 
+**推奨（コピー不要）**: Actions「Video Factory (manual)」で mode=generate-longform、source=lunar-camera のようにAnimation Factoryのlongform制作IDを指定する。公開済みのnomuonji/animation-factoryから対象JSONと変換ツールを直接取得し、制作ジョブZIPを生成する。追加の認証キーは不要。handoff.jsonには参照元コミットが残る。元の動画・音声ファイルは取得・転用しない。
+
+**個別request JSONから生成する場合**:
+
 1. Animation Factoryの長尺企画から、tools/motionmaker/export-longform.mjs でShin-MotionMaker公式の request.json を出力する。
 2. このリポジトリの factory-requests/<id>.json としてPRに入れる。外部メディアファイルは自動複製されない。使用する素材は別途権利・出典を確認する。
 3. Actionsの「Video Factory (manual)」で mode=generate, source=factory-requests/<id>.json を実行する。artifactの motion-job.zip は編集可能な制作の足場であり、完成動画ではない。
